@@ -1,0 +1,35 @@
+version: "3.9"
+
+services:
+  # ------------------- POSTGRES -------------------
+  db:
+    image: postgres:15
+    container_name: postgres
+    environment:
+      POSTGRES_USER: myuser
+      POSTGRES_PASSWORD: mypassword
+      POSTGRES_DB: mydb
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    restart: always
+
+  # ------------------- GO SERVICE -------------------
+  go-app:
+    build: ./go-app
+    container_name: go-app
+    ports:
+      - "8080:8080"
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USER: myuser
+      DB_PASSWORD: mypassword
+      DB_NAME: mydb
+    depends_on:
+      - db
+    restart: always
+
+volumes:
+  db_data:
